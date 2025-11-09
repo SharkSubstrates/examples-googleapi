@@ -1,0 +1,26 @@
+# Dependencies for running the examples
+#
+# For published packages (when available):
+# googleapi-oauth>=0.1.0
+# secretstore>=0.1.0
+# googleapi-drive>=0.1.0
+# googleapi-docs>=0.1.0
+# googleapi-sheets>=0.1.0
+# googleapi-slides>=0.1.0
+# googleapi-labels>=0.1.0
+
+# For local development, install from local paths:
+# googleapi-oauth @ file:///Users/user/Projects/googleapi-oauth
+# secretstore @ file:///Users/user/Projects/secretstore
+# googleapi-drive @ file:///Users/user/Projects/googleapi-drive
+# googleapi-docs @ file:///Users/user/Projects/googleapi-docs
+# googleapi-sheets @ file:///Users/user/Projects/googleapi-sheets
+# googleapi-slides @ file:///Users/user/Projects/googleapi-slides
+# googleapi-labels @ file:///Users/user/Projects/googleapi-labels
+
+# Or use editable installs:
+# pip install -e /Users/user/Projects/googleapi-oauth
+# pip install -e /Users/user/Projects/secretstore
+# pip install -e /Users/user/Projects/googleapi-drive
+# etc.
+

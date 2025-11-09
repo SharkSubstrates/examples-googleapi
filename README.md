@@ -1,86 +1,330 @@
-# GDriveKit
+# GDriveKit Examples
 
-A Python toolkit for Google Drive API automation. Built for agents and automation platforms that need reliable, programmatic access to Google Drive, Docs, Sheets, and Slides.
+**A cookbook for working with Google Drive APIs in Python.**
 
-## Why This Exists
+This repo demonstrates how to use the decoupled Google API packages for real-world automation tasks. No installable package - just clean, practical examples showing how the pieces fit together.
 
-Most Google Drive libraries are built for humans. This one's built for machines. Clean API, minimal dependencies, designed for automated workflows and AI agents that need to interact with Google Drive content.
+## The Ecosystem
 
-## Features
+GDriveKit is now a collection of standalone packages, each focused on a single Google API:
 
-### Core Capabilities
-- **Authentication**: OAuth2 with secure credential storage via system keyring
-- **Drive Operations**: List, search, download, and manage files/folders
-- **Export Engine**: Convert Google Docs, Sheets, and Slides to markdown, CSV, HTML, or other formats
-- **Metadata Management**: Work with custom properties, labels, and permissions
-- **Comments API**: Read and post comments on documents
-- **Batch Operations**: Parallel export with intelligent caching
-- **Search**: Content and filename search with folder scoping
+### Core Packages
 
-### Document Export Features
-- **Google Docs → Markdown/pdf**: Full document structure with images, tables, and formatting
-- **Google Slides → Markdown/pdf**: Slide content with image extraction
-- **Google Sheets → Markdown/pdf**: Sheet export with formatting preservation
-- **Asset Management**: Automatic image and media extraction
-- **Smart Caching**: Skip re-exporting unchanged files
+- **[`googleapi-oauth`](https://github.com/yourusername/googleapi-oauth)** - OAuth2 authentication for Google APIs
+- **[`secretstore`](https://github.com/yourusername/secretstore)** - Pluggable token storage (keyring, env vars, ephemeral, 1Password)
+
+### API Clients
+
+- **[`googleapi-drive`](https://github.com/yourusername/googleapi-drive)** - Drive API v3 (list, search, download, metadata, comments)
+- **[`googleapi-docs`](https://github.com/yourusername/googleapi-docs)** - Docs API v1 (structured content, markdown export)
+- **[`googleapi-sheets`](https://github.com/yourusername/googleapi-sheets)** - Sheets API v4 (spreadsheet data, markdown tables)
+- **[`googleapi-slides`](https://github.com/yourusername/googleapi-slides)** - Slides API v1 (presentation data, markdown export)
+- **[`googleapi-labels`](https://github.com/yourusername/googleapi-labels)** - Labels API v2 (enterprise label management)
+
+### Why Decoupled?
+
+**Loose Coupling**: Each API client is independent. Need just Docs? Install just `googleapi-docs`. No Drive dependency unless you need comments or metadata.
+
+**Least Privilege**: Request only the scopes you need. A doc-only workflow doesn't need Drive permissions.
+
+**Composable**: Mix and match packages for your workflow. The examples here show common patterns.
 
 ## Installation
 
-```bash
-# Using uv (recommended)
-uv pip install git+https://github.com/yourusername/gdrivekit.git
+Install only what you need:
 
-# Or pip
-pip install git+https://github.com/yourusername/gdrivekit.git
+```bash
+# Authentication (required)
+pip install googleapi-oauth secretstore
+
+# API clients (pick what you need)
+pip install googleapi-drive
+pip install googleapi-docs
+pip install googleapi-sheets
+pip install googleapi-slides
+pip install googleapi-labels
+```
+
+Or install from local paths during development:
+
+```bash
+pip install /path/to/googleapi-oauth
+pip install /path/to/googleapi-drive
+# etc.
 ```
 
 ## Quick Start
 
-### 1. Configure OAuth Credentials
-
-Create a `gdfs.env` file:
-
-```env
-GOOGLE_OAUTH_CLIENT_ID=your_client_id.apps.googleusercontent.com
-GOOGLE_OAUTH_CLIENT_SECRET=your_client_secret
-GOOGLE_OAUTH_REDIRECT_URI=http://localhost:8080
-GOOGLE_OAUTH_SCOPES=https://www.googleapis.com/auth/drive
-```
-
-### 2. Basic Usage
+### Basic Authentication
 
 ```python
-from gdrivekit.auth.client import DriveAuthClient
-from gdrivekit.clients.drive import DriveClient
+from googleapi_oauth import OAuth2Client
+from secretstore import KeyringStorage
 
-# Authenticate
-auth = DriveAuthClient()
-drive_service = auth.get_authenticated_service()
-
-# List files
-client = DriveClient(drive_service)
-files = client.list_items()
-
-for file in files:
-    print(f"{file.name} ({file.type})")
+# Setup OAuth (one time, credentials cached)
+auth = OAuth2Client(
+    client_id='your_client_id.apps.googleusercontent.com',
+    client_secret='your_client_secret',
+    scopes=['https://www.googleapis.com/auth/drive.readonly'],
+    storage=KeyringStorage('myapp')
+)
 ```
 
-### 3. Export Documents
+### List Files in Drive
 
 ```python
-from gdrivekit.export.docs.exporters import DocsExporter
+from googleapi_drive import DriveClient
 
-exporter = DocsExporter(drive_service)
-result = exporter.export_doc(
-    file_id="your_doc_id",
-    output_dir="./output"
+drive = DriveClient(auth)
+
+# List My Drive
+for item in drive.list_items('root'):
+    print(f"{item.name} - {item.type.value}")
+
+# Search by name
+results = drive.search_by_name("meeting notes", limit=10)
+```
+
+### Export a Google Doc to Markdown
+
+```python
+from googleapi_docs import DocsClient
+
+docs = DocsClient(auth)
+
+# Export to markdown
+markdown, assets = docs.export('document_id_here')
+
+# Save output
+with open('output.md', 'w') as f:
+    f.write(markdown)
+
+# Save images
+for asset in assets:
+    with open(f'assets/{asset.name}', 'wb') as f:
+        f.write(asset.content)
+```
+
+### With Comments
+
+```python
+from googleapi_drive import DriveClient
+from googleapi_docs import DocsClient
+
+drive = DriveClient(auth)
+docs = DocsClient(auth)
+
+doc_id = 'your_doc_id'
+
+# Fetch comments via Drive API
+comments = drive.get_comments(doc_id)
+
+# Export with comments annotated
+markdown, assets = docs.export(doc_id, comments=comments)
+```
+
+## Examples
+
+This repo contains practical examples showing real-world workflows:
+
+### Basic Operations
+- **`01_user_and_drives.py`** - Authentication and drive listing
+- **`02_properties_and_labels.py`** - Custom metadata management
+- **`03_comments.py`** - Comment interaction
+- **`04_download.py`** - File downloads
+- **`07_search.py`** - Search by name and content
+- **`08_envvar_auth.py`** - Environment variable authentication
+
+### Export Workflows
+- **`05_export_single.py`** - Export a single document to markdown
+- **`06_batch_export.py`** - Simple batch export (DEPRECATED, see 09_batch_export_parallel.py)
+- **`09_batch_export_parallel.py`** - Parallel batch export with multiprocessing and caching
+
+### Advanced Patterns
+- **Recursive folder export** - Export entire folder hierarchies
+- **Parallel processing** - Use multiprocessing for batch operations
+- **Caching strategies** - Skip unchanged files, content-based hashing
+- **Error handling** - Graceful failures and retries
+
+## Common Patterns
+
+### Pattern 1: Export Single Doc (No Drive Dependency)
+
+```python
+from googleapi_oauth import OAuth2Client
+from secretstore import KeyringStorage
+from googleapi_docs import DocsClient
+
+auth = OAuth2Client(
+    client_id='...',
+    client_secret='...',
+    scopes=['https://www.googleapis.com/auth/documents.readonly'],
+    storage=KeyringStorage('myapp')
 )
 
-print(f"Exported to: {result.output_path}")
-# Content is in markdown: output/doc_id/content.md
-# Images in: output/doc_id/assets/
-# Comments in: output/doc_id/comments.json
+docs = DocsClient(auth)
+markdown, assets = docs.export('doc_id')
 ```
+
+**Note**: No `googleapi-drive` needed if you already know the doc ID!
+
+### Pattern 2: Full Workflow with Drive + Export
+
+```python
+from googleapi_oauth import OAuth2Client
+from secretstore import KeyringStorage
+from googleapi_drive import DriveClient
+from googleapi_docs import DocsClient
+
+auth = OAuth2Client(
+    client_id='...',
+    client_secret='...',
+    scopes=[
+        'https://www.googleapis.com/auth/drive.readonly',
+        'https://www.googleapis.com/auth/documents.readonly'
+    ],
+    storage=KeyringStorage('myapp')
+)
+
+drive = DriveClient(auth)
+docs = DocsClient(auth)
+
+# Search for docs
+results = drive.search_by_name("meeting", limit=5)
+
+# Export each
+for item in results:
+    if item.type == ItemType.DOCS_DOCUMENT:
+        markdown, assets = docs.export(item.id)
+        # Save to disk...
+```
+
+### Pattern 3: Batch Export with Multiprocessing
+
+```python
+from multiprocessing import Pool
+from googleapi_docs import DocsClient
+
+def export_doc(doc_id):
+    docs = DocsClient(auth)  # Each worker gets own client
+    return docs.export(doc_id)
+
+doc_ids = ['id1', 'id2', 'id3', ...]
+
+with Pool(4) as pool:
+    results = pool.map(export_doc, doc_ids)
+```
+
+See `09_batch_export_parallel.py` for a complete implementation.
+
+## Architecture Philosophy
+
+### Before: Monolithic
+
+```
+gdrivekit (one big package)
+├── Everything tightly coupled
+└── Can't use docs without drive
+```
+
+### After: Composable Modules
+
+```
+Each API = standalone package
+├── Use only what you need
+├── No unnecessary dependencies
+└── Converters stay with their APIs (tight coupling is fine there)
+```
+
+**Key Decisions**:
+- **Drive, Docs, Sheets, Slides, Labels** → Separate packages (different APIs)
+- **Converters** → Submodules within API packages (tightly coupled to API output)
+- **Batch operations** → Examples, not a package (just multiprocessing patterns)
+- **Orchestration** → Compose yourself, examples show how
+- **Caching** → Could be extracted as `export-cache` utility (generic, reusable)
+
+## Development Setup
+
+### Using Local Packages (Recommended)
+
+If you're developing the packages or have them cloned locally:
+
+1. **Edit `pyproject.toml`** - Update paths to your local package directories:
+
+```toml
+dependencies = [
+    "python-dotenv>=1.2.1",
+    "googleapi-oauth @ file:///Users/you/Projects/googleapi-oauth",
+    "secretstore @ file:///Users/you/Projects/secretstore",
+    "googleapi-drive @ file:///Users/you/Projects/googleapi-drive",
+    "googleapi-docs @ file:///Users/you/Projects/googleapi-docs",
+    "googleapi-sheets @ file:///Users/you/Projects/googleapi-sheets",
+    "googleapi-slides @ file:///Users/you/Projects/googleapi-slides",
+    "googleapi-labels @ file:///Users/you/Projects/googleapi-labels",
+]
+```
+
+2. **Sync dependencies**:
+
+```bash
+uv sync
+```
+
+3. **Configure `.env`** with your OAuth credentials (see Authentication Setup below)
+
+4. **Run examples**:
+
+```bash
+uv run python 05_export_single.py
+```
+
+### Manual Installation
+
+Alternatively, install packages individually:
+
+```bash
+# Clone packages
+git clone https://github.com/you/googleapi-oauth
+git clone https://github.com/you/googleapi-drive
+# etc.
+
+# Install in editable mode
+cd googleapi-oauth && pip install -e .
+cd googleapi-drive && pip install -e .
+# etc.
+
+# Run examples
+cd gdrive-tools
+python 01_user_and_drives.py
+```
+
+## Authentication Setup
+
+### 1. Create Google Cloud Project
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create new project or select existing
+3. Enable APIs: Drive API, Docs API, Sheets API, Slides API, Labels API
+4. Create OAuth 2.0 credentials (Desktop app)
+
+### 2. Configure Environment
+
+Copy the example configuration and fill in your credentials:
+
+```bash
+cp example.env .env
+# Edit .env with your credentials
+```
+
+Your `.env` file should look like:
+
+```env
+CLIENT_ID=your_client_id.apps.googleusercontent.com
+CLIENT_SECRET=your_client_secret
+CLIENT_SCOPES=https://www.googleapis.com/auth/drive.readonly,https://www.googleapis.com/auth/documents.readonly,https://www.googleapis.com/auth/spreadsheets.readonly,https://www.googleapis.com/auth/presentations.readonly
+```
+
+Or use `KeyringStorage` for system keychain storage.
 
 ## Use Cases
 
@@ -93,57 +337,32 @@ print(f"Exported to: {result.output_path}")
 - Batch export documentation for versioning
 - Sync Drive content to other platforms
 - Automated backup and archival
-- Content migration workflows
 
 ### For Data Processing
 - Extract structured data from Sheets
 - Process presentation content at scale
 - Metadata analysis and tagging
 
-## Examples
-
-Check the `examples/` directory for detailed usage:
-
-- `01_user_and_drives.py` - Authentication and drive listing
-- `02_properties_and_labels.py` - Custom metadata management
-- `03_comments.py` - Comment interaction
-- `04_download.py` - File downloads
-- `05_export_single.py` - Export single documents
-- `06_batch_export.py` - Parallel batch export with caching
-- `07_search.py` - Search functionality
-
-## Architecture
-
-```
-gdrivekit/
-├── auth/          # OAuth2 authentication and credential storage
-├── clients/       # API clients (Drive, Sheets, Slides, Labels)
-├── export/        # Export engine with format converters
-│   ├── docs/      # Google Docs exporters
-│   ├── sheets/    # Google Sheets exporters
-│   └── slides/    # Google Slides exporters
-└── item.py        # Core data models
-```
-
 ## Requirements
 
-- Python ≥ 3.12
-- Google Cloud project with Drive API enabled
+- Python ≥ 3.10
+- Google Cloud project with appropriate APIs enabled
 - OAuth2 credentials
 
-## Dependencies
+## Contributing
 
-- google-api-python-client
-- google-auth
-- beautifulsoup4 (for HTML parsing)
-- keyring (secure credential storage)
-- python-dotenv
+This is a cookbook. Got a useful pattern? Submit a PR with a new example.
 
 ## License
 
 MIT
 
-## Contributing
+## Related Projects
 
-This is a tool for getting shit done. PRs welcome if they add value.
-
+- **[`googleapi-oauth`](https://github.com/yourusername/googleapi-oauth)** - OAuth2 for Google APIs
+- **[`secretstore`](https://github.com/yourusername/secretstore)** - Secret storage backends
+- **[`googleapi-drive`](https://github.com/yourusername/googleapi-drive)** - Drive API client
+- **[`googleapi-docs`](https://github.com/yourusername/googleapi-docs)** - Docs API client
+- **[`googleapi-sheets`](https://github.com/yourusername/googleapi-sheets)** - Sheets API client
+- **[`googleapi-slides`](https://github.com/yourusername/googleapi-slides)** - Slides API client
+- **[`googleapi-labels`](https://github.com/yourusername/googleapi-labels)** - Labels API client

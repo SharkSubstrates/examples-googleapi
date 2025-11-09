@@ -1,15 +1,16 @@
 [project]
 name = "gdrive-tools"
 version = "0.1.0"
-description = "Foundational Google Drive and Docs functionality for automation."
-readme = "README.md"
+description = "Testing environment for Google Drive tools"
 requires-python = ">=3.12"
 dependencies = [
-    "beautifulsoup4>=4.12.0",
-    "google-api-python-client>=2.0.0",
-    "google-auth>=2.0.0",
-    "google-auth-oauthlib>=1.0.0",
-    "keyring>=24.0.0",
-    "python-dotenv>=1.0.0",
-    "requests>=2.31.0",
+    "python-dotenv>=1.2.1",
+    "googleapi-oauth @ file:///path/to/googleapi-oauth",
+    "secretstore @ file:///path/to/secretstore",
+    "googleapi-drive @ file:///path/to/googleapi-drive",
+    "googleapi-docs @ file:///path/to/googleapi-docs",
+    "googleapi-sheets @ file:///path/to/googleapi-sheets",
+    "googleapi-slides @ file:///path/to/googleapi-slides",
+    "googleapi-labels @ file:///path/to/googleapi-labels",
 ]
+
