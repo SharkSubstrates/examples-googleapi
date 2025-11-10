@@ -23,7 +23,7 @@ from googleapi_slides import SlidesClient, convert_slides_to_markdown
 
 # Test file IDs - replace with your own
 # See MY_TEST_IDS.txt for the original test IDs
-TEST_DOCUMENT_ID = "1_Aa4YkzEASDP5Kcgj6VG7dMmB891azneTMZP41ntOYQ"
+TEST_DOCUMENT_ID = "YOUR_DOCS_ID_HERE"
 TEST_SLIDES_ID = "YOUR_SLIDES_ID_HERE"
 TEST_SHEET_ID = "YOUR_SHEET_ID_HERE"
 
