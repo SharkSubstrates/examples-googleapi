@@ -10,16 +10,16 @@ GDriveKit is now a collection of standalone packages, each focused on a single G
 
 ### Core Packages
 
-- **[`googleapi-oauth`](https://github.com/yourusername/googleapi-oauth)** - OAuth2 authentication for Google APIs
-- **[`secretstore`](https://github.com/yourusername/secretstore)** - Pluggable token storage (keyring, env vars, ephemeral, 1Password)
+- **[`googleapi-oauth`](https://github.com/SharkSubstrates/googleapi-oauth)** - OAuth2 authentication for Google APIs
+- **[`secretstore`](https://github.com/SharkSubstrates/utils-secretstore)** - Pluggable token storage (keyring, env vars, ephemeral, 1Password)
 
 ### API Clients
 
-- **[`googleapi-drive`](https://github.com/yourusername/googleapi-drive)** - Drive API v3 (list, search, download, metadata, comments)
-- **[`googleapi-docs`](https://github.com/yourusername/googleapi-docs)** - Docs API v1 (structured content, markdown export)
-- **[`googleapi-sheets`](https://github.com/yourusername/googleapi-sheets)** - Sheets API v4 (spreadsheet data, markdown tables)
-- **[`googleapi-slides`](https://github.com/yourusername/googleapi-slides)** - Slides API v1 (presentation data, markdown export)
-- **[`googleapi-labels`](https://github.com/yourusername/googleapi-labels)** - Labels API v2 (enterprise label management)
+- **[`googleapi-drive`](https://github.com/SharkSubstrates/googleapi-drive)** - Drive API v3 (list, search, download, metadata, comments)
+- **[`googleapi-docs`](https://github.com/SharkSubstrates/googleapi-docs)** - Docs API v1 (structured content, markdown export)
+- **[`googleapi-sheets`](https://github.com/SharkSubstrates/googleapi-sheets)** - Sheets API v4 (spreadsheet data, markdown tables)
+- **[`googleapi-slides`](https://github.com/SharkSubstrates/googleapi-slides)** - Slides API v1 (presentation data, markdown export)
+- **[`googleapi-labels`](https://github.com/SharkSubstrates/googleapi-labels)** - Labels API v2 (enterprise label management)
 
 ### Why Decoupled?
 
@@ -359,10 +359,10 @@ MIT
 
 ## Related Projects
 
-- **[`googleapi-oauth`](https://github.com/yourusername/googleapi-oauth)** - OAuth2 for Google APIs
-- **[`secretstore`](https://github.com/yourusername/secretstore)** - Secret storage backends
-- **[`googleapi-drive`](https://github.com/yourusername/googleapi-drive)** - Drive API client
-- **[`googleapi-docs`](https://github.com/yourusername/googleapi-docs)** - Docs API client
-- **[`googleapi-sheets`](https://github.com/yourusername/googleapi-sheets)** - Sheets API client
-- **[`googleapi-slides`](https://github.com/yourusername/googleapi-slides)** - Slides API client
-- **[`googleapi-labels`](https://github.com/yourusername/googleapi-labels)** - Labels API client
+- **[`googleapi-oauth`](https://github.com/SharkSubstrates/googleapi-oauth)** - OAuth2 for Google APIs
+- **[`secretstore`](https://github.com/SharkSubstrates/secretstore)** - Secret storage backends
+- **[`googleapi-drive`](https://github.com/SharkSubstrates/googleapi-drive)** - Drive API client
+- **[`googleapi-docs`](https://github.com/SharkSubstrates/googleapi-docs)** - Docs API client
+- **[`googleapi-sheets`](https://github.com/SharkSubstrates/googleapi-sheets)** - Sheets API client
+- **[`googleapi-slides`](https://github.com/SharkSubstrates/googleapi-slides)** - Slides API client
+- **[`googleapi-labels`](https://github.com/SharkSubstrates/googleapi-labels)** - Labels API client
